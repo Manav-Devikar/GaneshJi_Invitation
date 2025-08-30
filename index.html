@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ganesh Ji — Aarti & Dinner Invitation</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1: #0b1020;
+      --accent: #d4a017;
+      --curtain-duration: 5.5s;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0;}
+    body{
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(212,160,23,0.06), transparent), var(--bg-1);
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden;
+    }
+
+    .curtain{
+      position:fixed; inset:0; z-index:9999; display:flex; pointer-events:none;
+    }
+    .curtain .panel{
+      width:50%; height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+      box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+      background-size:cover;
+      transform-origin:center;
+    }
+    .curtain .left{ background: linear-gradient(180deg,#7b0f1a 0%, #9b1f29 60%); }
+    .curtain .right{ background: linear-gradient(180deg,#6a0b1a 0%, #8b1624 60%); }
+    .curtain .panel::after{
+      content:''; position:absolute; inset:0;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(0,0,0,0.06), transparent 12%),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.03) 0 6px, rgba(255,255,255,0.02) 6px 12px);
+      opacity:0.9; mix-blend-mode:multiply;
+    }
+    .curtain.open .left{ animation:openLeft var(--curtain-duration) cubic-bezier(.2,.9,.2,1) forwards; }
+    .curtain.open .right{ animation:openRight var(--curtain-duration) cubic-bezier(.2,.9,.2,1) forwards; }
+    @keyframes openLeft{
+      0% { transform: translateX(0) scaleX(1.06); }
+      100%{ transform: translateX(-100%) scaleX(.98); }
+    }
+    @keyframes openRight{
+      0% { transform: translateX(0) scaleX(1.06); }
+      100%{ transform: translateX(100%) scaleX(.98); }
+    }
+
+    .flowers-container{ position:fixed; inset:0; pointer-events:none; z-index:900; }
+    .flower{ position:absolute; top:-10vh; left:50%; transform:translateX(-50%); font-size:26px; opacity:0; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.45)); }
+
+    @keyframes flowerFall{
+      0%{ transform: translateY(-10vh) translateX(0) rotate(0deg); opacity:1; }
+      100%{ transform: translateY(110vh) translateX(var(--x,0px)) rotate(720deg); opacity:0.12; }
+    }
+
+    .invite{
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem;
+      transition: opacity .45s ease, transform .45s ease; opacity:0; transform:scale(.98); z-index:10; position:relative;
+    }
+    .invite.show{ opacity:1; transform:scale(1); }
+
+    .card{
+      width:100%; max-width:920px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      padding:1.5rem; border-radius:16px; text-align:center; box-shadow: 0 14px 40px rgba(2,6,23,0.6); border:1px solid rgba(212,160,23,0.08);
+      display:flex; flex-wrap:wrap; gap:1.5rem; align-items:center; justify-content:center;
+    }
+
+    .left-col{ flex:0 1 260px; display:flex; flex-direction:column; align-items:center; gap:0rem; }
+    .ganesh-img{ width:300px; height:300px; margin-bottom: 1rem; border-radius:50%; object-fit:cover; border:5px solid rgba(212,160,23,0.95); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
+    .badge{ font-family:'Playfair Display', serif; margin:0rem; margin-top: 1.5rem; line-height: 1.2; color:var(--accent); }
+
+    .right-col{ flex:1 1 420px; text-align:left; }
+    h1{ font-family:'Playfair Display', serif; font-weight:600; margin: 0.2rem 0 0.3rem 0; font-size:1.8rem; }
+    p.lead{ margin:0 0 1rem 0; opacity:0.9; font-size:1rem; line-height:1.5; }
+
+    .event-info{ display:flex; gap:0.8rem; flex-wrap:wrap; margin-top:0.8rem; justify-content:flex-start; }
+    .info-block{ background:rgba(255,255,255,0.03); padding:0.7rem 1rem; border-radius:8px; flex:1 1 140px; }
+    .info-block strong{ display:block; font-size:1rem; }
+    .info-label{ opacity:0.8; font-size:0.85rem; }
+    .info-block a{ color:var(--accent); text-decoration:none; font-weight:600; }
+
+    .stacked-section{ margin-top:1.4rem; text-align:center; }
+    .stacked-section .btn {
+      width: 100%; max-width: 180px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 1.5rem auto 0 auto;
+      display: block;
+    }
+    .stacked-section .btn:hover { background-color:#218838; transform:scale(1.03); }
+    .stacked-section .btn:disabled { background-color: white; color:#888; border:1px solid #ccc; cursor:not-allowed; opacity:0.8; }
+
+    #celebrationMessage { display:none; font-size:1.3rem; color:var(--accent); font-weight:700; margin-top:1rem; }
+    #acceptStatus { margin-top:0.5rem; font-size:0.9rem; opacity:0.95; }
+    footer.small{ margin-top:1rem; font-size:0.9rem; font-weight:600; text-align:center; color:var(--accent); }
+
+    /* Responsive */
+    @media (max-width:768px){
+      .card{ flex-direction:column; padding:1.25rem; gap:1rem; }
+      .ganesh-img{ width:150px; height:150px; }
+      h1{ font-size:1.5rem; text-align:center; }
+      .right-col{ text-align:center; }
+      .event-info{ justify-content:center; }
+    }
+    @media (max-width:480px){
+      .ganesh-img{ width:130px; height:130px; }
+      h1{ font-size:1.3rem; }
+      p.lead{ font-size:0.95rem; }
+      .info-block strong{ font-size:0.95rem; }
+      .stacked-section .btn{ max-width:160px; font-size:0.95rem; padding:10px 14px; }
+    }
+
+    #fireworksCanvas {
+      position: fixed; top: 0; left: 0; width:100%; height:100%;
+      pointer-events: none; z-index:2000; display:none;
+    }
+
+    .ganpati-banner{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:2100;
+      pointer-events:none; opacity:0; transform:scale(.88);
+      transition: opacity .28s ease, transform .6s cubic-bezier(.2,.9,.2,1);
+      text-align:center;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.7);
+    }
+    .ganpati-banner.show{ opacity:1; transform:scale(1); }
+    .ganpati-banner .text{
+      font-family:'Playfair Display', serif;
+      font-size:2.6rem;
+      color:var(--accent);
+      padding:1rem 1.6rem;
+      border-radius:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.04));
+      box-shadow: 0 12px 40px rgba(212,160,23,0.08), 0 4px 10px rgba(0,0,0,0.6);
+      border: 1px solid rgba(212,160,23,0.12);
+      animation: glowPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes glowPulse{
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.02); }
+      100% { transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="curtain" id="curtain">
+    <div class="panel left"></div>
+    <div class="panel right"></div>
+  </div>
+
+  <div class="flowers-container" id="flowers"></div>
+
+  <main class="invite" id="invite">
+    <div class="card">
+      <div class="left-col">
+        <img class="ganesh-img" src="ganeshji.jpg" alt="Ganesh Ji" />
+        <div class="badge">With love and devotion, we invite you</div>
+        </div>
+
+      <div class="right-col">
+        <h1>Ganesh Ji Aarti & Dinner</h1>
+        <p class="lead">Join us for the Aarti followed by dinner to celebrate and seek blessings of Lord Ganesha.</p>
+
+        <div class="event-info">
+          <div class="info-block"><strong id="eventDateText">--</strong><div class="info-label">Date & Time</div></div>
+          <div class="info-block"><strong id="eventDayText">--</strong><div class="info-label">Day</div></div>
+          <div class="info-block"><strong id="currentTimeText">--</strong><div class="info-label">Current Local Time</div></div>
+          <div class="info-block" style="min-width:240px;">
+            <strong><a href="https://maps.google.com/?q=lalganj khairipura, Mehendibagh Road, Nagpur" target="_blank">lalganj khairipura, Mehendibagh Road, Nagpur</a></strong>
+            <div class="info-label">Address</div>
+          </div>
+          <div class="info-block"><strong>Chandrashekhar Devikar</strong><div class="info-label">Host</div></div>
+          <div class="info-block"><strong>+91 9923301849</strong><div class="info-label">Contact Number</div></div>
+        </div>
+
+        <div class="stacked-section">
+          <button id="acceptBtn" class="btn">Accept</button>
+          <div id="celebrationMessage">🙏 Ganpati Bappa Morya! 🙏</div>
+          <div id="acceptStatus"></div>
+          <footer class="small">🌸 Devikar Family welcomes you 🌸</footer>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <canvas id="fireworksCanvas"></canvas>
+  <div class="ganpati-banner" id="ganpatiBanner"><div class="text">🙏 Ganpati Bappa Morya! 🙏</div></div>
+
+  <script>
+    const eventDate = new Date('2025-09-04T19:00:00');
+    const curtain = document.getElementById('curtain');
+    const flowersContainer = document.getElementById('flowers');
+    const invite = document.getElementById('invite');
+    const eventDateText = document.getElementById('eventDateText');
+    const eventDayText = document.getElementById('eventDayText');
+    const currentTimeText = document.getElementById('currentTimeText');
+    const acceptBtn = document.getElementById('acceptBtn');
+    const celebrationMessage = document.getElementById('celebrationMessage');
+    const acceptStatus = document.getElementById('acceptStatus');
+    const fireworksCanvas = document.getElementById('fireworksCanvas');
+    const ganpatiBanner = document.getElementById('ganpatiBanner');
+    const FLOWER_COUNT = 120;
+    const CURTAIN_DURATION_MS = 5500;
+
+    function fmtEventDate(d){ return d.toLocaleString(undefined,{ weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'numeric', minute:'2-digit' }); }
+    function fmtDay(d){ return d.toLocaleString(undefined,{ weekday:'long' }); }
+    function pad(n){ return n<10? '0'+n : n; }
+    eventDateText.textContent = fmtEventDate(eventDate);
+    eventDayText.textContent = fmtDay(eventDate);
+    function updateClock(){ const now=new Date(); currentTimeText.textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`; }
+    setInterval(updateClock,1000); updateClock();
+
+    function throwFlowers(count){
+      for(let i=0;i<count;i++){
+        const f=document.createElement('div'); f.className='flower';
+        f.textContent=['🌸','🌺','🌼','🌻'][Math.floor(Math.random()*4)];
+        const startOffset=(Math.random()*160)-80;
+        f.style.left=`calc(50% + ${startOffset}px)`;
+        f.style.setProperty('--x',Math.floor((Math.random()*800)-400)+'px');
+        const dur=(1.8+Math.random()*1.6).toFixed(2); const delay=(i*0.06).toFixed(2);
+        f.style.animation=`flowerFall ${dur}s linear ${delay}s forwards`;
+        f.style.fontSize=(18+Math.floor(Math.random()*22))+'px';
+        flowersContainer.appendChild(f);
+        setTimeout(()=>f.remove(),(parseFloat(dur)+parseFloat(delay))*1000+1500);
+      }
+    }
+
+    function startFireworks(durationMs=6000){
+      const canvas=fireworksCanvas, ctx=canvas.getContext('2d');
+      canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.display='block';
+      ganpatiBanner.classList.add('show');
+      let particles=[]; let animId=null; let spawn=setInterval(()=>createExplosion(Math.random()*canvas.width,Math.random()*canvas.height/2),480);
+      function createExplosion(x,y){const hue=Math.floor(Math.random()*360),count=Math.floor(Math.random()*50+40);for(let i=0;i<count;i++){const ang=Math.random()*2*Math.PI,speed=Math.random()*5+1;particles.push({x,y,vx:Math.cos(ang)*speed,vy:Math.sin(ang)*speed,life:100,age:0,hue,alpha:1});}}
+      function animate(){ctx.fillStyle='rgba(6,10,20,0.18)';ctx.fillRect(0,0,canvas.width,canvas.height);particles.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.05;p.age++;p.alpha=1-p.age/p.life;if(p.alpha<=0){particles.splice(i,1);return;}ctx.beginPath();ctx.fillStyle=`hsla(${p.hue},100%,55%,${p.alpha})`;ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fill();});animId=requestAnimationFrame(animate);}animate();
+      setTimeout(()=>{clearInterval(spawn);setTimeout(()=>{ganpatiBanner.classList.remove('show');},700);setTimeout(()=>{cancelAnimationFrame(animId);canvas.style.display='none';particles=[];},1400);},durationMs);
+    }
+
+    function startSequence(){
+      curtain.classList.add('open');
+      setTimeout(()=>throwFlowers(FLOWER_COUNT),CURTAIN_DURATION_MS-600);
+      setTimeout(()=>{invite.classList.add('show');document.body.style.overflow='auto';curtain.style.display='none';},CURTAIN_DURATION_MS+120);
+    }
+    document.addEventListener('DOMContentLoaded',()=>setTimeout(startSequence,450));
+
+    acceptBtn.addEventListener('click',()=>{
+      acceptBtn.disabled=true;
+      celebrationMessage.style.display='block';
+      acceptStatus.textContent="Thank you! Your acceptance is noted.";
+      startFireworks(6500);
+    });
+
+    window.addEventListener('resize',()=>{fireworksCanvas.width=window.innerWidth;fireworksCanvas.height=window.innerHeight;});
+  </script>
+</body>
+</html>
